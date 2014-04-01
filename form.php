@@ -5,5 +5,7 @@ function __autoload($classname){
  	require_once $classname.'.php';
 }
 
- Board::getHTML();
+
+
+Board::getHTML();
 ?>
