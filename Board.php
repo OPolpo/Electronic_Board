@@ -5,6 +5,7 @@ class Board{
 	private static $userName = "webuser";
 	private static $password = "dummypass";
 	private static $dbName = "tia";
+	private static $NO_AGREEMENT = "Agreement not yet reached";
 
 	public static function perform_query($query){
 		$db = new mysqli("127.0.0.1", self::$userName, self::$password, self::$dbName, 8889);//connecting to dbq
@@ -32,16 +33,17 @@ class Board{
 	}
 
 	public static function submit($user,$proposal){
-		$result=self::perform_query("INSERT INTO board VALUES(\"$user\",\"$proposal\")");//query
-		if(!$result = $db->query($sql))
-    		die('There was an error running the query [' . $db->error . ']');
+		if(self::checkStatus()==self::$NO_AGREEMENT){
+			$query="UPDATE board SET proposal='$proposal' WHERE user='$user'";
+			self::perform_query($query);
+		}
 	}
 
 	public static function checkStatus(){
 		$result=self::perform_query("SELECT * FROM (SELECT proposal AS prop, COUNT(proposal) AS count FROM board GROUP BY proposal )AS poo HAVING count> (SELECT COUNT(*)/2 FROM board WHERE user IS NOT NULL) AND count>=all(SELECT count(proposal) FROM board GROUP BY proposal)");
 		if($row = $result->fetch_assoc())
-			return "YES =====> ".$row['prop'];
-		return "NO";
+			return "Agreement Reached: ".$row['prop'];
+		return self::$NO_AGREEMENT;
 	}
 
 	public static function sendMail($proposal){
