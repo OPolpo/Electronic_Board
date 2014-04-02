@@ -49,7 +49,7 @@ class Board{
 	}
 
 	public static function sendMail($proposal){
-		$text="è stato raggiunto un accordo, la proposta scelta dalla maggior parte dei membri è: ".$proposal;
+		$text="An agreement is reached, the final decision is: ".$proposal;
 		ini_set('SMTP', 'smtp.gmail.com');
 		mail('git-projects@omnip.it','final decision',$text,"From:Electronic_Board@webprogrammingclass.com");
 	}
