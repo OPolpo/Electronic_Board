@@ -42,15 +42,18 @@ class Board{
 	public static function checkStatus(){
 		$result=self::perform_query("SELECT * FROM (SELECT proposal AS prop, COUNT(proposal) AS count FROM board GROUP BY proposal )AS poo HAVING count> (SELECT COUNT(*)/2 FROM board WHERE user IS NOT NULL) AND count>=all(SELECT count(proposal) FROM board GROUP BY proposal)");
 		if($row = $result->fetch_assoc()){
+			self::sendMail($row['prop']);//everytime i check the status after the agreement is reached i send an email
 			return "Agreement Reached: ".$row['prop'];
-			self::sendMail($row['prop']);//everytime i check the status after the agreement is reached i send an exif_thumbnail(filename)
 		}
 		return self::$NO_AGREEMENT;
 	}
 
 	public static function sendMail($proposal){
 		$text="An agreement is reached, the final decision is: ".$proposal;
-		ini_set('SMTP', 'smtp.gmail.com');
-		mail('git-projects@omnip.it','final decision',$text,"From:Electronic_Board@webprogrammingclass.com");
+		ini_set ("SMTP","aspmx.l.google.com");
+		ini_set ("sendmail_from","Electronic_Board@webprogrammingclass.com");
+		ini_set("smtp_port","25");
+		if(mail('git-projects@omnip.it','final decision',$text))
+			echo "<script type='text/javascript'>alert('Agreement Reached - Email sent');</script>";
 	}
 }
