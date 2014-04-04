@@ -6,16 +6,21 @@ class Board{
 	private static $password = "dummypass";
 	private static $dbName = "tia";
 	private static $NO_AGREEMENT = "Agreement not yet reached";
+	private static $db;
+
+	public static function open(){
+		self::$db = new mysqli("127.0.0.1", self::$userName, self::$password, self::$dbName, 8889);//connecting to dbq
+		if (self::$db->connect_errno)
+    	    echo "Failed to connect to MySQL: (" . self::$db->connect_errno . ") " . self::$db->connect_error;
+
+	}
+	public static function close(){
+		self::$db->close();
+	}
 
 	public static function perform_query($query){
-		$db = new mysqli("127.0.0.1", self::$userName, self::$password, self::$dbName, 8889);//connecting to dbq
-    	if ($db->connect_errno)
-    	    echo "Failed to connect to MySQL: (" . $db->connect_errno . ") " . $db->connect_error;
-		
-		if(!$result = $db->query($query))
-    		die('There was an error running the query [' . $db->error . ']');
-
-    	$db->close();//Closing Connection
+		if(!$result = self::$db->query($query))
+    		die('There was an error running the query [' . self::$db->error . ']');
 
 		return $result;
 	}
